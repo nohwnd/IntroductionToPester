@@ -1,6 +1,6 @@
 . $PSScriptRoot\ConvertTo-CamelCasedPSObject.ps1
 . $PSScriptRoot\ConvertTo-CamelCase.ps1
-. $PSScriptRoot\Get-Prs.ps1
+
 
 function Get-GitHubSummary { 
     param (
@@ -15,6 +15,21 @@ function Get-GitHubSummary {
     Get-Summary -Repo $Repo -IssueCount $issues.TotalCount -PrCount $prs.TotalCount -NotificationCount $notifications.Count
 }
 
+function Get-Summary {
+    param (
+        $Repo,
+        $IssueCount,
+        $PrCount,
+        $NotificationCount
+    )
+
+    "$Repo $IssueCount $PrCount !$NotificationCount"
+}
+
+# Get-Prs is in it's own file as it should
+. $PSScriptRoot\Get-Prs.ps1
+
+
 function Get-Issues {
     param (
         $Repo,
@@ -26,8 +41,6 @@ function Get-Issues {
         ConvertTo-CamelCasedPSObject
 }
 
-
-
 function Get-Notifications {
     param (
         $Repo,
@@ -37,17 +50,6 @@ function Get-Notifications {
     $uri = "https://api.github.com/repos/$Repo/notifications"
     Invoke-RestMethod -Method GET -Authentication Bearer -Token $Token -Uri $uri |
         ConvertTo-CamelCasedPSObject
-}
-
-function Get-Summary {
-    param (
-        $Repo,
-        $IssueCount,
-        $PrCount,
-        $NotificationCount
-    )
-
-    "$Repo $IssueCount $PrCount !$NotificationCount"
 }
 
 Export-ModuleMember -Function 'Get-GitHubSummary'

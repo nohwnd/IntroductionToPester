@@ -4,8 +4,9 @@ BeforeAll {
 
 Describe 'Get-GitHubSummary' { 
     It 'Shows `pester/Pester 156 14 !25` summary' {
-        Mock Invoke-RestMethod { throw "Do not call the real Invoke-RestMethod" }
+        Mock Invoke-RestMethod { throw "Do not call the real Invoke-RestMethod" } -ModuleName GitHubSummary
 
+        # Invoke-RestMethod -Method GET -Authentication Bearer -Token $Token -Uri $uri 
         Mock Invoke-RestMethod -ParameterFilter { $Method -eq "GET" -and $Uri -like "*is:issue*" } -ModuleName GitHubSummary -MockWith {
             $issues = Get-Content "$PSScriptRoot\2022-28-01-pester-issues.json" | ConvertFrom-Json
             $issues 
